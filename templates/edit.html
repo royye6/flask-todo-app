@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+    <form hx-put="/" hx-target="thetask" hx-swap="outerHTML" class="bg-slate-200 h-content w-full shadow-xl border border-gray-300 rounded-xl
+        transition-transform hover:scale-95 mt-2 mb-6 flex justify-between items-center p-1">
+        <div class="DONE h-5 w-5 bg-slate-300 border border-black rounded"></div>
+        <div class="MAINTASK h-content w-4/6 flex flex-col justify-between">
+            <div class="h-content w-content">
+                <input type="text" name="title" value="" class="pl-1.5 bg-purple-600 h-12 w-full text-sm font-extrabold" placeholder="{{ todo.title }}"></input>
+            </div>
+            <div class=" flex h-content w-content items-center "> 
+                <input type="text" name="task" value="" class="pl-1.5 h-16 w-full bg-blue-900 text-sm" placeholder="{{ todo.task }}"></input>
+            </div>
+        </div>
+        <div class="EDIT/DELETE flex flex-col gap-1">
+            <div class="h-12 w-9 flex text-sm bg-blue-900 shadow-xl border border-black focus:border-green rounded items-center justify-center hover:bg-blue-800">
+                <button type="submit" class="text-white m-2">New Task</button>
+            </div>
+        </div>
+    </form>
+{% endblock %}

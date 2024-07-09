@@ -51,13 +51,29 @@ class Todos(db.Model):
 
 @app.route("/", methods=['POST', 'GET'])
 def index():
-    if htmx:
-        pass
-    else:
-        if request.method == 'GET':
-            pass
-    return render_template('index.html')
+    todos = db.session.execute(db.select(Todos).order_by(Todos.created_at)).scalars()
 
+    if request.method == 'POST':
+        title = request.form['title']
+        task = request.form['task']
+        if title != '' and task != '':
+            new_task = Todos(title=title, task=task)
+            db.session.add(new_task)
+            db.session.commit()
+        else:
+            return redirect('/')
+        
+    if request.method == 'GET':
+        todos
+
+    if htmx:
+        return redirect('/edit')
+    return render_template('index.html', todos=todos)
+
+
+@app.route("/edit", methods=['POST', 'GET'])
+def edit():
+    return render_template('edit.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
