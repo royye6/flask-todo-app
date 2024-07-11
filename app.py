@@ -67,13 +67,24 @@ def index():
         todos
 
     if htmx:
-        return redirect('/edit')
+        edit()
     return render_template('index.html', todos=todos)
 
 
-@app.route("/edit", methods=['POST', 'GET'])
-def edit():
-    return render_template('edit.html')
+@app.route("/edit/<int:todo_id>/", methods=['GET', 'PUT'])
+def edit(todo_id):
+    todo = Todos.query.get(todo_id)
+    if todo is None:
+        return print('error: todo not found')
+    if request.method == 'PUT':
+        new_title = request.form['ntitle']
+        new_task = request.form['ntask']
+        todo.update(new_title, new_task)
+        db.session.commit()
+        print('success: todo updated successfully!')
+        return redirect('/')
+
+    return render_template('edit.html', todo=todo)
 
 if __name__ == '__main__':
     app.run(debug=True)
