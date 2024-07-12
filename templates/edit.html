@@ -1,15 +1,15 @@
 {% extends 'base.html' %}
 {% block content %}
     <section>
-        <div class="card mt-2">
+        <div class="card mt-2" hx-target="this" hx-swap="outerHTML">
             <div class="card-body">  
                 <form class="flex flex-col gap-2">
                     <input type="text" name="ntitle" class="bg-slate-100 rounded pl-2 font-bold" value="{{ todo.title }}">
-                    <input type="text" name="ntask" class="bg-slate-100 rounded pl-2" value="{{ todo.title }}">
+                    <input type="text" name="ntask" class="bg-slate-100 rounded pl-2" value="{{ todo.task }}">
                     <div class="mt-2">
-                        <button type="submit" class="btn bt-sm btn-success" hx-put="{{ url_for('edit', todo_id=todo.id) }}">Done</button>
-                        <button type="button" class="btn bt-sm btn-warning" hx-put="{{ url_for('index') }}">Cancel</button>
-                        <div class="flex justify-end"><button type="button" class="btn bt-sm btn-danger">Delete</button></div>
+                        <button type="submit" class="btn btn-success btn-sm" hx-put="{{ url_for('edit', todo_id=todo.id) }}" >Done</button>
+                        <button class="btn btn-warning btn-sm" hx-swap="beforeend">Cancel</button>
+                        <div class="flex justify-end"><button hx-delete="{{ url_for('edit', todo_id=todo.id) }}" class="btn btn-danger btn-sm">Delete</button></div>
                     </div>
                 </form>
             </div>

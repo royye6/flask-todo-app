@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="card mt-2 tansition-transform hover:scale-105 shadow-xl" hx-target="this" hx-swap="outerHTML">
+        <div class="card-body">  
+            <h5 class="card-title">{{ todo_id.title }}</h5>
+            <p class="card-text">{{ todo_id.task }}</p>
+            <p class="card-text text-sm text-gray-400">{{ 'Completed' if todo_id.is_complete else 'Not complete' }}</p>
+            <div hx-get="{{ url_for('edit', todo_id=todo.id) }}" class="flex justify-end"><button class="btn btn-sm btn-primary">Edit</button></div>
+        </div>
+    </div>
+{% endblock %}

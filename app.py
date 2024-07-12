@@ -51,7 +51,7 @@ class Todos(db.Model):
 
 @app.route("/", methods=['POST', 'GET'])
 def index():
-    todos = db.session.execute(db.select(Todos).order_by(Todos.created_at)).scalars()
+    todos = Todos.query.all()
 
     if request.method == 'POST':
         title = request.form['title']
@@ -60,31 +60,55 @@ def index():
             new_task = Todos(title=title, task=task)
             db.session.add(new_task)
             db.session.commit()
+            return redirect('/')
         else:
             return redirect('/')
         
-    if request.method == 'GET':
-        todos
+    # if request.method == 'GET':
+    #     todos
 
-    if htmx:
+    if htmx == 'GET':
         edit()
+
     return render_template('index.html', todos=todos)
 
 
-@app.route("/edit/<int:todo_id>/", methods=['GET', 'PUT'])
+@app.route("/edit/<int:todo_id>/", methods=['GET', 'PUT', 'DELETE'])
 def edit(todo_id):
     todo = Todos.query.get(todo_id)
     if todo is None:
         return print('error: todo not found')
     if request.method == 'PUT':
+        todo = Todos.query.get(todo_id)
         new_title = request.form['ntitle']
         new_task = request.form['ntask']
         todo.update(new_title, new_task)
         db.session.commit()
         print('success: todo updated successfully!')
+        return redirect('/edited/<int:todo_id>/')
+    
+    # if request.method == 'GET':
+    #     return redirect('/')
+
+    if request.method == 'DELETE':
+        todo.delete()
+        db.session.commit()
         return redirect('/')
 
     return render_template('edit.html', todo=todo)
+
+
+@app.route("/edited/<int:todo_id>/", methods=['GET', 'PUT'])
+def edited(todo_id):
+    todo = Todos.query.get(todo_id)
+    if todo is None:
+        return print('error: todo not found')
+    
+    # if request.method == 'GET':
+    #     return redirect('/edited/<int:todo_id>/')
+    
+    return render_template('edited.html', todo=todo)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
