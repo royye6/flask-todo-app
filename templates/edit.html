@@ -5,14 +5,20 @@
             <div class="card-body">  
                 <form class="flex flex-col gap-2">
                     <input type="text" name="ntitle" class="bg-slate-100 rounded pl-2 font-bold" value="{{ todo.title }}">
-                    <input type="text" name="ntask" class="bg-slate-100 rounded pl-2" value="{{ todo.task }}">
+                    <input type="text" name="ntask" class="bg-slate-100 rounded h-8 pl-2" value="{{ todo.task }}">
                     <div class="mt-2">
                         <button type="submit" class="btn btn-success btn-sm" hx-put="{{ url_for('edit', todo_id=todo.id) }}" >Done</button>
-                        <button class="btn btn-warning btn-sm" hx-swap="beforeend">Cancel</button>
-                        <div class="flex justify-end"><button hx-delete="{{ url_for('edit', todo_id=todo.id) }}" class="btn btn-danger btn-sm">Delete</button></div>
+                        <button class="btn btn-warning btn-sm" hx-get="{{ url_for('display', todo_id=todo.id) }}">Cancel</button>
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <input type="checkbox" id="checkbox" name="completed" value="{% if todo.is_complete %} {{ todo.is_complete }} {% else %} {% endif %}" {% if todo.is_complete %} checked {% endif %}>
+                                <label for="checkbox" class="text-sm">Mark complete</label>
+                            </div>
+                            <div><button hx-delete="{{ url_for('edit', todo_id=todo.id) }}" class="btn btn-danger btn-sm ml-auto">Delete</button></div>
+                        </div>
                     </div>
                 </form>
             </div>
         </div>
-    </section>
+    </section>       
 {% endblock %}

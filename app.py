@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template
-from flask import url_for, redirect
+from flask import url_for, redirect, abort
 from flask_htmx import HTMX
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
@@ -46,12 +46,11 @@ class Todos(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-
 # routes
 
 @app.route("/", methods=['POST', 'GET'])
 def index():
-    todos = Todos.query.all()
+    todos = Todos.query.order_by(Todos.created_at.desc()).all()
 
     if request.method == 'POST':
         title = request.form['title']
@@ -64,50 +63,48 @@ def index():
         else:
             return redirect('/')
         
-    # if request.method == 'GET':
-    #     todos
-
     if htmx == 'GET':
         edit()
 
     return render_template('index.html', todos=todos)
 
 
+@app.route("/display/<int:todo_id>/", methods=['GET', 'PUT'])
+def display(todo_id):
+    todo = Todos.query.get(todo_id)
+
+    if todo is None:
+        return abort(404)
+    
+    return render_template('display.html', todo=todo)
+
+
 @app.route("/edit/<int:todo_id>/", methods=['GET', 'PUT', 'DELETE'])
 def edit(todo_id):
     todo = Todos.query.get(todo_id)
+
     if todo is None:
-        return print('error: todo not found')
-    if request.method == 'PUT':
-        todo = Todos.query.get(todo_id)
-        new_title = request.form['ntitle']
-        new_task = request.form['ntask']
-        todo.update(new_title, new_task)
-        db.session.commit()
-        print('success: todo updated successfully!')
-        return redirect('/edited/<int:todo_id>/')
+        print('error: todo not found')
+        return abort(404)
     
-    # if request.method == 'GET':
-    #     return redirect('/')
+    if request.method == 'PUT':
+        new_title = request.form.get('ntitle')
+        new_task = request.form.get('ntask')
+        status = request.form.get('completed', False)
+        todo.update(new_title, new_task)
+        if status:
+            todo.mark_complete()
+        else:
+            todo.is_complete = False
+            db.session.commit()
+        print('success: todo updated successfully!')
+        return display(todo_id)
 
     if request.method == 'DELETE':
         todo.delete()
         db.session.commit()
-        return redirect('/')
-
+        return ''
     return render_template('edit.html', todo=todo)
-
-
-@app.route("/edited/<int:todo_id>/", methods=['GET', 'PUT'])
-def edited(todo_id):
-    todo = Todos.query.get(todo_id)
-    if todo is None:
-        return print('error: todo not found')
-    
-    # if request.method == 'GET':
-    #     return redirect('/edited/<int:todo_id>/')
-    
-    return render_template('edited.html', todo=todo)
 
 
 if __name__ == '__main__':

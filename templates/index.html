@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-    <main class="min-h-screen p-4 sm:p-5">
+    <main class="h-content w-content p-4 sm:m-16 md:m-28 lg:m-40">
         <div class="flex justify-center mb-2">
             <h1 class="font-extrabold bg-gradient-to-r from-green-600 to-orange-600 text-4xl inline-block text-transparent bg-clip-text">TODO LIST APP</h1>
         </div>
@@ -20,13 +20,9 @@
                 <h2>TODOS</h2>
             </div>
             {% for todo in todos %}
-                <div class="card mt-2 tansition-transform hover:scale-105 shadow-xl" hx-target="this" hx-swap="outerHTML">
-                    <div class="card-body">  
-                        <h5 class="card-title">{{ todo.title }}</h5>
-                        <p class="card-text">{{ todo.task }}</p>
-                        <p class="card-text text-sm text-gray-400">{{ 'Completed' if todo.is_complete else 'Not complete' }}</p>
-                        <div hx-get="{{ url_for('edit', todo_id=todo.id) }}" class="flex justify-end"><button class="btn btn-sm btn-primary">Edit</button></div>
-                    </div>
+                <div hx-get="{{ url_for('display', todo_id=todo.id) }}"
+                    hx-trigger="load"
+                    hx-swap="outerHTML">
                 </div>
             {% endfor %}
         </div>
